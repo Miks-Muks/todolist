@@ -18,5 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # url for todolist app
     path('', include('todolist.urls')),
 ]
+admin.site.site_header = 'Todo administration'
