@@ -19,7 +19,7 @@ def sighup(request):
     else:
         if request.POST['password1'] == request.POST['password2']:
             try:
-                user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
+                user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
                 user.save()
                 login(request, user)
                 return redirect('home')
@@ -27,14 +27,29 @@ def sighup(request):
                 return render(request, 'todolist/signup user.html', {'form': UserCreationForm(),
                                                                      'error': 'That username has already been taken. '
                                                                               'Please choose a new username'})
+        else:
+            return render(request, 'todolist/signup user.html', {'form': UserCreationForm(),
+                                                                 'error': 'Password not cool'})
 
 
-def login(request):
+def login_user(request):
     if request.method == 'GET':
         auth = AuthenticationForm
         return render(request, 'todolist/login.html', context={'auth': auth})
     else:
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is None:
+            return render(request, 'todo/login.html',
+                          {'form': AuthenticationForm(), 'error': 'Username and password did not match'})
+        else:
+            login(request, user)
+            return redirect('current_to_do')
+
+
+def logout_user(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect(to='home')
 
 
 def current_to_do(request):
